@@ -44,6 +44,14 @@ jobs:
       - name: Start Docker Container on EC2 instance
         run: |
             ssh -i ~/.ssh/meinPrivateKey ec2-user@${{ secrets.EC2_IP }} << 'ENDSSH'
+                if [ $(docker ps -q -f name=mycalcapp) ]; then
+                    echo "Stopping and removing the existing mycalcapp container..."
+                    docker stop mycalcapp
+                    docker rm mycalcapp
+                else
+                    echo "No existing mycalcapp container running."
+                fi
+
                 docker run -d -p 80:3000 --name mycalcapp "${{ secrets.DOCKERHUB_USERNAME }}"/mycalcapp:latest
             ENDSSH
 
